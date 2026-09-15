@@ -1,49 +1,78 @@
-# 🧬 AssemblyQC Replication – *Bacillus subtilis*
+AssemblyQC Replication – Bacillus subtilis Genome QC
+Nextflow pipeline reproduction evaluating genome assembly quality on HPC using Singularity containers
+Class project for BINF6310 – Northeastern University | Sep 2026
 
-This project documents the reproduction of the AssemblyQC pipeline using the *Bacillus subtilis* genome as part of a class assignment for BINF6310 at Northeastern University.
+What This Project Does
+Reproduces the AssemblyQC pipeline to assess the quality of a Bacillus subtilis genome assembly (NCBI GCF_000009045.1) using multiple QC tools (Assemblathon2, LAI, NCBI FCS-GX) and generates an interactive HTML report. Demonstrates proficiency in bioinformatics workflow automation, HPC execution, and reproducible research practices.
 
-AssemblyQC is a Nextflow-based pipeline that evaluates genome assembly quality using tools like Assemblathon2, BUSCO, LAI, and NCBI FCS-GX. This reproduction was executed on the Discovery HPC cluster using Singularity.
+Tech Stack & Environment
+Component	Tool/Version
+Workflow Manager	Nextflow
+Containerization	Singularity 3.10.3
+Environment	Miniconda (binf6310)
+Compute	Discovery HPC Cluster (Northeastern)
+Input Data	B. subtilis FASTA (NCBI Assembly)
+Pipeline	Plant-Food-Research-Open/assemblyqc
 
----
+Repository Structure
 
-## 📦 Dataset
+assemblyqc-replication/
+├── README.md                  # This file
+├── execution_notes.md         # Full terminal commands & setup
+├── config/
+│   └── assemblysheet.csv      # Input file (tag, fasta)
+├── output/
+│   └── report.html            # QC summary report (view in browser)
+└── assemblyqc/                # Cloned pipeline directory
 
-- **Organism**: *Bacillus subtilis*
-- **Data Source**: NCBI Assembly (Accession: GCF_000009045.1_ASM904v1)
-- **Raw FASTA**: Downloaded via FTP (not included in this repo)
-- **Input Sheet**: See `assemblysheet.csv`
+How to Reproduce
+Prerequisites: Access to HPC with Singularity, Nextflow, and Miniconda.
 
----
+bash
+# 1. Start interactive session
+srun --pty --partition=courses --export=ALL --mem=16G -t 4:00:00 -c 2 bash
 
-## 🔁 Pipeline Used
+# 2. Load modules
+module load miniconda3/23.11.0
+source activate binf6310
+module load singularity/3.10.3
 
-- GitHub Repo: [Plant-Food-Research-Open/assemblyqc](https://github.com/Plant-Food-Research-Open/assemblyqc)
-- Version: Latest main branch (`-revision main`)
-- Environment: Nextflow + Singularity on Discovery HPC
+# 3. Clone and run pipeline
+git clone https://github.com/Plant-Food-Research-Open/assemblyqc.git
+cd assemblyqc
+nextflow run Plant-Food-Research-Open/assemblyqc \
+  -revision main \
+  -profile singularity \
+  --input config/assemblysheet.csv \
+  --outdir output
+Resume after interruption: add -resume flag to the nextflow run command.
 
----
+Key Results
+Assemblathon2, LAI, NCBI FCS-GX: Completed successfully
 
-## 📄 Files Included
+BUSCO: Failed inside Singularity (known compatibility issue); run separately for gene-space completeness
 
-| File | Description |
-|------|-------------|
-| `README.md` | Project summary |
-| `execution_notes.md` | Full terminal commands and environment setup |
-| `assemblysheet.csv` | Input file listing genome used |
-| `report.html` | Output HTML summary from the pipeline |
+Output: Interactive report.html with unified QC metrics across tools
 
----
+What I Learned
+Containerized workflow execution on HPC environments
 
-## ⚠️ Notes
+Troubleshooting pipeline failures (BUSCO/Singularity incompatibility)
 
-- Raw genome files are not included due to file size.
-- BUSCO failed under Singularity; this was a known issue. Other modules ran successfully.
-- Only the configuration file was modified; no changes were made to the pipeline code.
+Reproducible research documentation for bioinformatics projects
 
----
+Interpreting multi-tool QC reports for genome assemblies
 
-## 📚 References
 
-- Rashid, S., et al. (2024). *AssemblyQC: A Nextflow pipeline for reproducible reporting of assembly quality.* Bioinformatics.
-- [AssemblyQC GitHub](https://github.com/Plant-Food-Research-Open/assemblyqc)
-- Yang et al. (2024). [doi:10.1016/j.intimp.2024.113083](https://doi.org/10.1016/j.intimp.2024.113083)
+References
+Rashid, S., et al. (2024). AssemblyQC: A Nextflow pipeline for reproducible reporting of assembly quality. Bioinformatics.
+
+Pipeline: github.com/Plant-Food-Research-Open/assemblyqc
+
+Documentation: plant-food-research-open.github.io/assemblyqc
+
+Contact
+Sushma Ankathi
+Bioinformatics Professional | Toronto, ON
+LinkedIn - www.linkedin.com/in/
+sushma-ankathi-3369a535a
